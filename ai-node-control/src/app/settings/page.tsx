@@ -36,7 +36,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-zinc-500">Configure AI Command Center preferences</p>
+        <p className="text-zinc-500">Configure ACE preferences</p>
       </div>
 
       {/* Connection Settings */}

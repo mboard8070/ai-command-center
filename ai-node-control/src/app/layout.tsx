@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth-provider";
-import { Sidebar } from "@/components/sidebar";
+import { TopNav } from "@/components/top-nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Command Center",
-  description: "Command center for Clawdbot agents",
+  title: "ACE - AI Command Environment",
+  description: "Command environment for Clawdbot agents",
 };
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen">
-      <Sidebar />
+    <div className="min-h-screen flex flex-col">
+      <TopNav />
       <main className="flex-1 overflow-auto p-6">
         {children}
       </main>

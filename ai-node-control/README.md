@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ACE - AI Command Environment
+
+A modern dashboard for managing Clawdbot AI agents, sessions, nodes, and infrastructure.
+
+## Features
+
+- **Dashboard** - Real-time overview of AI infrastructure status
+- **Sessions** - Monitor and manage active agent sessions
+- **Cron Jobs** - Schedule and monitor automated tasks
+- **Nodes** - View connected devices and their status
+- **Activity** - Live feed of agent actions and events
+- **Memory** - Browse agent memory and context
+- **System** - GPU monitoring, resource usage, and system health
+- **Security** - API authentication, CORS, rate limiting, and access control
+- **Settings** - Configure gateway connection and preferences
+
+## Tech Stack
+
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **shadcn/ui** - Beautiful UI components
+- **Lucide Icons** - Modern icon set
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or pnpm
+- Clawdbot gateway running
+
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set your gateway URL in the Settings tab, or create a `.env.local` file:
 
-## Learn More
+```env
+NEXT_PUBLIC_GATEWAY_URL=http://localhost:18789
+NEXT_PUBLIC_API_TOKEN=your-gateway-token
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Security
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+ACE includes built-in security features:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Token Authentication** - API token required for all requests
+- **CORS Protection** - Cross-origin requests restricted to allowed domains
+- **Rate Limiting** - Prevents API abuse (configurable)
+- **Security Headers** - X-Frame-Options, CSP, and other protections
 
-## Deploy on Vercel
+## Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/              # Next.js App Router pages
+│   ├── activity/     # Activity feed
+│   ├── api/          # API routes (proxy to gateway)
+│   ├── cron/         # Cron job management
+│   ├── memory/       # Memory browser
+│   ├── nodes/        # Node management
+│   ├── security/     # Security settings
+│   ├── sessions/     # Session management
+│   ├── settings/     # App settings
+│   └── system/       # System monitoring
+├── components/       # React components
+│   ├── ui/           # shadcn/ui components
+│   └── ...           # App components
+└── lib/              # Utilities and helpers
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT
