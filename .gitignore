@@ -1,0 +1,34 @@
+# Only track ai-node-control project
+# Ignore everything else in this workspace
+
+# Python virtual environments
+venv/
+.venv/
+tools/.venv/
+__pycache__/
+*.pyc
+
+# Generated outputs
+outputs/
+*.mp4
+flux_output.png
+
+# Workspace files (personal, not for repo)
+AGENTS.md
+SOUL.md
+IDENTITY.md
+TOOLS.md
+USER.md
+HEARTBEAT.md
+memory/
+logs/
+canvas/
+tools/
+
+# Secrets
+.secrets/
+
+# Node/Next.js
+node_modules/
+.next/
+.env*
