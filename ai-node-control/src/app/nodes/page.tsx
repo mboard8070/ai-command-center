@@ -52,7 +52,8 @@ export default function NodesPage() {
 
   const fetchNodes = async () => {
     try {
-      const response = await fetch("/api/nodes");
+      const { authFetch } = await import("@/lib/auth");
+      const response = await authFetch("/api/nodes");
       const data = await response.json();
       setNodes(data.nodes || []);
     } catch (error) {

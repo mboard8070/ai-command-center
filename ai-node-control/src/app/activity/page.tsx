@@ -60,7 +60,7 @@ export default function ActivityPage() {
 
   const fetchActivity = async () => {
     try {
-      const response = await fetch("/api/activity");
+      const { authFetch } = await import("@/lib/auth"); const response = await authFetch("/api/activity");
       const data = await response.json();
       setActivities(data.activities || []);
     } catch (error) {

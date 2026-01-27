@@ -45,7 +45,7 @@ export default function CronPage() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch("/api/cron");
+      const { authFetch } = await import("@/lib/auth"); const response = await authFetch("/api/cron");
       const data = await response.json();
       setJobs(data.jobs || []);
     } catch (error) {

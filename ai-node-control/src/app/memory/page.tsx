@@ -39,7 +39,7 @@ export default function MemoryPage() {
 
   const fetchFiles = async () => {
     try {
-      const response = await fetch("/api/memory");
+      const { authFetch } = await import("@/lib/auth"); const response = await authFetch("/api/memory");
       const data = await response.json();
       setFiles(data.files || []);
     } catch (error) {

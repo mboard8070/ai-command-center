@@ -51,7 +51,7 @@ export default function SystemPage() {
   const refreshStats = async () => {
     setIsRefreshing(true);
     try {
-      const response = await fetch("/api/system");
+      const { authFetch } = await import("@/lib/auth"); const response = await authFetch("/api/system");
       const data = await response.json();
       setStats(data);
     } catch (error) {

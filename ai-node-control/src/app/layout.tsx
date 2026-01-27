@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth-provider";
 import { Sidebar } from "@/components/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -10,6 +11,17 @@ export const metadata: Metadata = {
   description: "Command center for Clawdbot agents",
 };
 
+function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-screen">
+      <Sidebar />
+      <main className="flex-1 overflow-auto p-6">
+        {children}
+      </main>
+    </div>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -18,12 +30,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-zinc-950 text-zinc-100 antialiased`}>
-        <div className="flex h-screen">
-          <Sidebar />
-          <main className="flex-1 overflow-auto p-6">
+        <AuthProvider>
+          <AuthenticatedLayout>
             {children}
-          </main>
-        </div>
+          </AuthenticatedLayout>
+        </AuthProvider>
       </body>
     </html>
   );

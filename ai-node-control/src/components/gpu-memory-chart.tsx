@@ -188,7 +188,8 @@ export function GpuMemoryChart() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/gpu-processes");
+      const { authFetch } = await import("@/lib/auth");
+      const response = await authFetch("/api/gpu-processes");
       const result = await response.json();
       setData(result);
     } catch (error) {
