@@ -28,6 +28,13 @@ Web dashboard for **MAUDE** (Multi-Agent Unified Dispatch Engine) - monitor conv
 - View stored facts, preferences, and context
 - Search across memory categories
 
+### Scheduler
+- View all scheduled MAUDE tasks
+- Task stats: total, active, run counts
+- Expandable cards with schedule, prompt, and last result
+- Human-readable schedule display (e.g., "Daily at 8:00 AM")
+- Auto-refresh every 30 seconds
+
 ### Nodes
 - Channel status (TUI, Telegram)
 - DGX Spark hub monitoring
@@ -88,11 +95,13 @@ src/
 │   │   ├── activity/      # Chat sync log reader
 │   │   ├── memory/        # SQLite memory database
 │   │   ├── nodes/         # Channel status
+│   │   ├── scheduler/     # Scheduled tasks
 │   │   ├── sessions/      # Conversation history
 │   │   └── system/        # GPU/CPU metrics
 │   ├── activity/          # Activity feed page
 │   ├── memory/            # Memory browser page
 │   ├── nodes/             # Nodes page
+│   ├── scheduler/         # Scheduler page
 │   ├── sessions/          # Sessions page
 │   ├── settings/          # Settings page
 │   ├── system/            # System monitoring page
@@ -113,6 +122,7 @@ The dashboard reads from MAUDE's local data:
 |------|--------|
 | Activity | `~/.config/maude/chat_sync.jsonl` |
 | Memory | `~/.config/maude/memory.db` (SQLite) |
+| Scheduler | `~/.config/maude/schedules.json` |
 | Sessions | `~/.config/maude/memory.db` conversations table |
 | System | `nvidia-smi` and system commands |
 

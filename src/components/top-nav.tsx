@@ -12,6 +12,7 @@ import {
   Brain,
   Cpu,
   Shield,
+  Clock,
 } from "lucide-react";
 
 const navigation = [
@@ -20,6 +21,7 @@ const navigation = [
   { name: "Nodes", href: "/nodes", icon: Server },
   { name: "Activity", href: "/activity", icon: Activity },
   { name: "Memory", href: "/memory", icon: Brain },
+  { name: "Scheduler", href: "/scheduler", icon: Clock },
   { name: "System", href: "/system", icon: Cpu },
   { name: "Security", href: "/security", icon: Shield },
   { name: "Settings", href: "/settings", icon: Settings },
