@@ -7,8 +7,8 @@ import { TopNav } from "@/components/top-nav";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ACE - AI Command Environment",
-  description: "Command environment for Clawdbot agents",
+  title: "MAUDE Command Center",
+  description: "Multi-Agent Unified Dispatch Engine - Command Center",
 };
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {

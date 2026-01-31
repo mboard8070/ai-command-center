@@ -40,14 +40,14 @@ export function TopNav() {
           </div>
           <div>
             <h1 className="font-bold text-white text-lg tracking-tight">
-              ACE
-              <span className="text-zinc-500 font-normal text-sm ml-2">AI Command Environment</span>
+              MAUDE
+              <span className="text-zinc-500 font-normal text-sm ml-2">Command Center</span>
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs text-zinc-500">Gateway Connected</span>
+          <span className="text-xs text-zinc-500">MAUDE Online</span>
         </div>
       </div>
 

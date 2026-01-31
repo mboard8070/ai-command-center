@@ -36,7 +36,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-zinc-500">Configure ACE preferences</p>
+        <p className="text-zinc-500">Configure MAUDE Command Center</p>
       </div>
 
       {/* Connection Settings */}
@@ -134,23 +134,17 @@ export default function SettingsPage() {
             <span className="text-sm text-zinc-200">1.0.0</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-zinc-400">Agent</span>
-            <span className="text-sm text-zinc-200">Agent (main)</span>
+            <span className="text-sm text-zinc-400">Model</span>
+            <span className="text-sm text-zinc-200">Nemotron-3-Nano-30B</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-zinc-400">Gateway</span>
-            <span className="text-sm text-zinc-200">Clawdbot v0.4.x</span>
+            <span className="text-sm text-zinc-400">System</span>
+            <span className="text-sm text-zinc-200">MAUDE (Multi-Agent Unified Dispatch Engine)</span>
           </div>
           <Separator className="bg-zinc-800" />
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="border-zinc-700 flex-1" asChild>
-              <a href="https://docs.clawd.bot" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Documentation
-              </a>
-            </Button>
-            <Button variant="outline" className="border-zinc-700 flex-1" asChild>
-              <a href="https://github.com/clawdbot/clawdbot" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/mboard8070/terminal-llm" target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="mr-2 h-4 w-4" />
                 GitHub
               </a>
