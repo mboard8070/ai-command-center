@@ -37,9 +37,9 @@ const stats = [
     color: "text-blue-400",
   },
   {
-    name: "Cron Jobs",
-    value: "7",
-    change: "Next: 8:00 AM",
+    name: "Memory Entries",
+    value: "24",
+    change: "Last updated: now",
     icon: Clock,
     color: "text-amber-400",
   },
@@ -48,7 +48,7 @@ const stats = [
 const recentActivity = [
   { id: 1, type: "message", channel: "telegram", content: "Research world labs.ai...", time: "2 min ago" },
   { id: 2, type: "tool", channel: "system", content: "web_fetch: worldlabs.ai", time: "3 min ago" },
-  { id: 3, type: "cron", channel: "system", content: "mochi-retry scheduled for 11pm", time: "15 min ago" },
+  { id: 3, type: "message", channel: "cli", content: "Context loaded from memory", time: "15 min ago" },
   { id: 4, type: "message", channel: "telegram", content: "AnimateDiff video generated", time: "45 min ago" },
 ];
 
@@ -105,9 +105,6 @@ export default function Dashboard() {
                     )}
                     {item.type === "tool" && (
                       <Zap className="h-4 w-4 text-amber-400" />
-                    )}
-                    {item.type === "cron" && (
-                      <Clock className="h-4 w-4 text-purple-400" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">

@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   MessageSquare,
-  Clock,
   Server,
   Activity,
   Settings,
@@ -17,7 +16,6 @@ import {
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Sessions", href: "/sessions", icon: MessageSquare },
-  { name: "Cron Jobs", href: "/cron", icon: Clock },
   { name: "Nodes", href: "/nodes", icon: Server },
   { name: "Activity", href: "/activity", icon: Activity },
   { name: "Memory", href: "/memory", icon: Brain },
@@ -36,8 +34,8 @@ export function Sidebar() {
           <Cpu className="h-5 w-5 text-white" />
         </div>
         <div>
-          <h1 className="font-semibold text-white">AI Command Center</h1>
-          <p className="text-xs text-zinc-500">Clawdbot Dashboard</p>
+          <h1 className="font-semibold text-white">MAUDE</h1>
+          <p className="text-xs text-zinc-500">Command Center</p>
         </div>
       </div>
 
@@ -67,7 +65,7 @@ export function Sidebar() {
       <div className="border-t border-zinc-800 p-4">
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs text-zinc-500">Gateway Connected</span>
+          <span className="text-xs text-zinc-500">MAUDE Online</span>
         </div>
       </div>
     </div>

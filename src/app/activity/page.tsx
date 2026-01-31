@@ -5,11 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { 
-  Activity, 
+import {
+  Activity,
   MessageSquare,
   Zap,
-  Clock,
   Search,
   Filter,
   RefreshCw,
@@ -23,7 +22,7 @@ import { useEffect, useState } from "react";
 
 interface ActivityItem {
   id: string;
-  type: "message" | "tool" | "cron" | "system";
+  type: "message" | "tool" | "system";
   channel: string;
   content: string;
   details?: string;
@@ -34,14 +33,12 @@ interface ActivityItem {
 const typeIcons = {
   message: MessageSquare,
   tool: Zap,
-  cron: Clock,
   system: Bot,
 };
 
 const typeColors = {
   message: "text-blue-400 bg-blue-500/10",
   tool: "text-amber-400 bg-amber-500/10",
-  cron: "text-purple-400 bg-purple-500/10",
   system: "text-zinc-400 bg-zinc-500/10",
 };
 
