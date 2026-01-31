@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   MessageSquare,
-  Clock,
   Server,
   Activity,
   Settings,
@@ -18,7 +17,6 @@ import {
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Sessions", href: "/sessions", icon: MessageSquare },
-  { name: "Cron", href: "/cron", icon: Clock },
   { name: "Nodes", href: "/nodes", icon: Server },
   { name: "Activity", href: "/activity", icon: Activity },
   { name: "Memory", href: "/memory", icon: Brain },
