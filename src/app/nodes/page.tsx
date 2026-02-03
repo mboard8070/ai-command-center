@@ -3,9 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Server, 
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Server,
   Monitor,
   Smartphone,
   Laptop,
@@ -13,24 +13,46 @@ import {
   WifiOff,
   RefreshCw,
   Terminal,
-  Camera,
-  MapPin,
   Bell,
   Network,
-  LayoutGrid
+  LayoutGrid,
+  Bot,
+  Cpu,
+  Play,
+  Square,
+  CheckCircle,
+  XCircle,
+  MessageCircle,
+  Circle
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NodeGraph } from "@/components/node-graph";
 
+interface MaudeStatus {
+  installed: boolean;
+  running: boolean;
+  type: string;
+}
+
 interface Node {
   id: string;
   name: string;
+  type: string;
   platform: string;
-  status: "online" | "offline";
+  status: "online" | "offline" | "idle";
   ip?: string;
-  lastSeen?: number;
+  lastSeen?: string;
   capabilities?: string[];
   isHub?: boolean;
+  description?: string;
+  maudeClient?: boolean;
+  maudeStatus?: MaudeStatus;
+}
+
+interface ServerStatus {
+  maudeRunning: boolean;
+  nemotronRunning: boolean;
+  telegramBotRunning: boolean;
 }
 
 const platformIcons: Record<string, typeof Server> = {
@@ -39,15 +61,20 @@ const platformIcons: Record<string, typeof Server> = {
   macos: Laptop,
   ios: Smartphone,
   android: Smartphone,
+  cli: Terminal,
+  telegram: MessageCircle,
 };
 
 export default function NodesPage() {
   const [nodes, setNodes] = useState<Node[]>([]);
+  const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<"graph" | "grid">("graph");
+  const [view, setView] = useState<"graph" | "grid">("grid");
 
   useEffect(() => {
     fetchNodes();
+    const interval = setInterval(fetchNodes, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchNodes = async () => {
@@ -56,25 +83,52 @@ export default function NodesPage() {
       const response = await authFetch("/api/nodes");
       const data = await response.json();
       setNodes(data.nodes || []);
+      setServerStatus(data.serverStatus || null);
     } catch (error) {
       console.error("Failed to fetch nodes:", error);
     }
     setLoading(false);
   };
 
-  const sendNotification = async (nodeId: string) => {
-    try {
-      await fetch(`/api/nodes/${nodeId}/notify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "Test", body: "Notification from AI Command Center" }),
-      });
-    } catch (error) {
-      console.error("Failed to send notification:", error);
+  const onlineCount = nodes.filter(n => n.status === "online").length;
+  const tailscaleNodes = nodes.filter(n => n.type !== "channel");
+  const channelNodes = nodes.filter(n => n.type === "channel");
+
+  // Get status label for a node
+  const getNodeStatusLabel = (node: Node) => {
+    const ms = node.maudeStatus;
+    if (!ms) return null;
+
+    if (node.status === "offline") {
+      return { label: "Offline", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" };
+    }
+
+    switch (ms.type) {
+      case "server":
+        if (ms.running) {
+          return { label: "Server Running", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", icon: Play };
+        }
+        return { label: "Server Stopped", color: "bg-red-500/10 text-red-400 border-red-500/20", icon: Square };
+
+      case "client":
+        if (!ms.installed) {
+          return { label: "Not Installed", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20", icon: XCircle };
+        }
+        if (ms.running) {
+          return { label: "Client Running", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", icon: Play };
+        }
+        return { label: "Client Stopped", color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", icon: Square };
+
+      case "telegram":
+        if (ms.running) {
+          return { label: "Telegram Active", color: "bg-purple-500/10 text-purple-400 border-purple-500/20", icon: MessageCircle };
+        }
+        return { label: "Telegram Idle", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20", icon: MessageCircle };
+
+      default:
+        return { label: "Device", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" };
     }
   };
-
-  const onlineCount = nodes.filter(n => n.status === "online").length;
 
   return (
     <div className="space-y-6">
@@ -83,7 +137,7 @@ export default function NodesPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Network Nodes</h1>
           <p className="text-zinc-500">
-            {onlineCount} of {nodes.length} nodes online
+            {onlineCount} of {nodes.length} nodes on Tailscale
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -105,6 +159,78 @@ export default function NodesPage() {
           </Button>
         </div>
       </div>
+
+      {/* Server Status Bar */}
+      {serverStatus && (
+        <Card className="border-zinc-800 bg-zinc-900/50">
+          <CardContent className="py-4">
+            <div className="flex flex-wrap items-center gap-4">
+              {/* MAUDE Server */}
+              <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-zinc-800/50">
+                <Bot className="h-5 w-5 text-cyan-400" />
+                <div>
+                  <div className="text-xs text-zinc-500">MAUDE Server</div>
+                  <div className="flex items-center gap-1">
+                    {serverStatus.maudeRunning ? (
+                      <>
+                        <Circle className="h-2 w-2 fill-emerald-400 text-emerald-400" />
+                        <span className="text-sm font-medium text-emerald-400">Running</span>
+                      </>
+                    ) : (
+                      <>
+                        <Circle className="h-2 w-2 fill-red-400 text-red-400" />
+                        <span className="text-sm font-medium text-red-400">Stopped</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Nemotron */}
+              <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-zinc-800/50">
+                <Cpu className="h-5 w-5 text-orange-400" />
+                <div>
+                  <div className="text-xs text-zinc-500">Nemotron LLM</div>
+                  <div className="flex items-center gap-1">
+                    {serverStatus.nemotronRunning ? (
+                      <>
+                        <Circle className="h-2 w-2 fill-emerald-400 text-emerald-400" />
+                        <span className="text-sm font-medium text-emerald-400">Running</span>
+                      </>
+                    ) : (
+                      <>
+                        <Circle className="h-2 w-2 fill-red-400 text-red-400" />
+                        <span className="text-sm font-medium text-red-400">Stopped</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Telegram Bot */}
+              <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-zinc-800/50">
+                <MessageCircle className="h-5 w-5 text-purple-400" />
+                <div>
+                  <div className="text-xs text-zinc-500">Telegram Bot</div>
+                  <div className="flex items-center gap-1">
+                    {serverStatus.telegramBotRunning ? (
+                      <>
+                        <Circle className="h-2 w-2 fill-emerald-400 text-emerald-400" />
+                        <span className="text-sm font-medium text-emerald-400">Running</span>
+                      </>
+                    ) : (
+                      <>
+                        <Circle className="h-2 w-2 fill-zinc-400 text-zinc-400" />
+                        <span className="text-sm font-medium text-zinc-400">Stopped</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Network Graph View */}
       {view === "graph" && (
@@ -138,119 +264,141 @@ export default function NodesPage() {
               <RefreshCw className="h-6 w-6 animate-spin text-zinc-500" />
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {nodes.map((node) => {
-                const Icon = platformIcons[node.platform] || Server;
-                return (
-                  <Card key={node.id} className="border-zinc-800 bg-zinc-900/50">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${
-                            node.status === "online" ? "bg-emerald-500/10" : "bg-zinc-800"
-                          }`}>
-                            <Icon className={`h-6 w-6 ${
-                              node.status === "online" ? "text-emerald-400" : "text-zinc-500"
-                            }`} />
+            <>
+              {/* Tailscale Machines Section */}
+              <div>
+                <h2 className="text-lg font-semibold text-zinc-200 mb-4 flex items-center gap-2">
+                  <Network className="h-5 w-5 text-cyan-400" />
+                  Tailscale Machines
+                </h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {tailscaleNodes.map((node) => {
+                    const Icon = platformIcons[node.platform] || Server;
+                    const statusInfo = getNodeStatusLabel(node);
+                    const StatusIcon = statusInfo?.icon;
+
+                    return (
+                      <Card key={node.id} className="border-zinc-800 bg-zinc-900/50">
+                        <CardContent className="pt-4">
+                          {/* Header with icon and name */}
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${
+                              node.status === "online" ? "bg-cyan-500/10" : "bg-zinc-800"
+                            }`}>
+                              <Icon className={`h-6 w-6 ${
+                                node.status === "online" ? "text-cyan-400" : "text-zinc-500"
+                              }`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-zinc-200 truncate flex items-center gap-2">
+                                {node.name}
+                                {node.isHub && (
+                                  <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-xs">
+                                    Hub
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="text-xs text-zinc-500">{node.platform}</div>
+                            </div>
                           </div>
-                          <div>
-                            <CardTitle className="text-base text-zinc-200">
-                              {node.name}
-                              {node.isHub && (
-                                <Badge className="ml-2 bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
-                                  Hub
+
+                          {/* Tailscale Status */}
+                          <div className="space-y-2 mb-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-zinc-500">Tailscale</span>
+                              <Badge className={
+                                node.status === "online"
+                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                  : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
+                              }>
+                                {node.status === "online" ? (
+                                  <Wifi className="mr-1 h-3 w-3" />
+                                ) : (
+                                  <WifiOff className="mr-1 h-3 w-3" />
+                                )}
+                                {node.status === "online" ? "Online" : "Offline"}
+                              </Badge>
+                            </div>
+
+                            {/* MAUDE Status */}
+                            {statusInfo && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-zinc-500">MAUDE</span>
+                                <Badge className={statusInfo.color}>
+                                  {StatusIcon && <StatusIcon className="mr-1 h-3 w-3" />}
+                                  {statusInfo.label}
                                 </Badge>
-                              )}
-                            </CardTitle>
-                            <CardDescription className="text-xs">{node.platform}</CardDescription>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                        <Badge className={
-                          node.status === "online"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
-                        }>
-                          {node.status === "online" ? (
-                            <Wifi className="mr-1 h-3 w-3" />
-                          ) : (
-                            <WifiOff className="mr-1 h-3 w-3" />
-                          )}
-                          {node.status}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {/* IP Address */}
-                      {node.ip && (
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-zinc-500">Tailscale IP</span>
-                          <code className="text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded text-xs">
-                            {node.ip}
-                          </code>
-                        </div>
-                      )}
 
-                      {/* Capabilities */}
-                      {node.capabilities && node.capabilities.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {node.capabilities.includes("exec") && (
-                            <Badge variant="outline" className="text-xs border-zinc-700">
-                              <Terminal className="mr-1 h-3 w-3" />
-                              Exec
-                            </Badge>
+                          {/* IP Address */}
+                          {node.ip && (
+                            <div className="pt-2 border-t border-zinc-800">
+                              <code className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded block text-center">
+                                {node.ip}
+                              </code>
+                            </div>
                           )}
-                          {node.capabilities.includes("camera") && (
-                            <Badge variant="outline" className="text-xs border-zinc-700">
-                              <Camera className="mr-1 h-3 w-3" />
-                              Camera
-                            </Badge>
-                          )}
-                          {node.capabilities.includes("location") && (
-                            <Badge variant="outline" className="text-xs border-zinc-700">
-                              <MapPin className="mr-1 h-3 w-3" />
-                              Location
-                            </Badge>
-                          )}
-                          {node.capabilities.includes("notify") && (
-                            <Badge variant="outline" className="text-xs border-zinc-700">
-                              <Bell className="mr-1 h-3 w-3" />
-                              Notify
-                            </Badge>
-                          )}
-                        </div>
-                      )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
 
-                      {/* Actions */}
-                      <div className="flex gap-2 pt-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 border-zinc-700"
-                          onClick={() => sendNotification(node.id)}
-                          disabled={node.status !== "online"}
-                        >
-                          <Bell className="mr-1 h-3 w-3" />
-                          Ping
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 border-zinc-700"
-                          disabled={node.status !== "online"}
-                        >
-                          <Terminal className="mr-1 h-3 w-3" />
-                          Exec
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+              {/* Channels Section */}
+              <div>
+                <h2 className="text-lg font-semibold text-zinc-200 mb-4 flex items-center gap-2">
+                  <Terminal className="h-5 w-5 text-purple-400" />
+                  Interfaces
+                </h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {channelNodes.map((node) => {
+                    const Icon = platformIcons[node.platform] || Terminal;
+
+                    return (
+                      <Card key={node.id} className="border-zinc-800 bg-zinc-900/50">
+                        <CardContent className="pt-4">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                              node.status === "online" ? "bg-purple-500/10" :
+                              node.status === "idle" ? "bg-yellow-500/10" : "bg-zinc-800"
+                            }`}>
+                              <Icon className={`h-5 w-5 ${
+                                node.status === "online" ? "text-purple-400" :
+                                node.status === "idle" ? "text-yellow-400" : "text-zinc-500"
+                              }`} />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-zinc-200">{node.name}</div>
+                              <div className="text-xs text-zinc-500">{node.description}</div>
+                            </div>
+                            <Badge className={
+                              node.status === "online"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : node.status === "idle"
+                                ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                                : "bg-red-500/10 text-red-400 border-red-500/20"
+                            }>
+                              {node.status === "online" ? "Active" : node.status === "idle" ? "Idle" : "Stopped"}
+                            </Badge>
+                          </div>
+                          {node.lastSeen && (
+                            <div className="text-xs text-zinc-500 pt-2 border-t border-zinc-800">
+                              Last: {new Date(node.lastSeen).toLocaleString()}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
           )}
         </>
       )}
-
     </div>
   );
 }
